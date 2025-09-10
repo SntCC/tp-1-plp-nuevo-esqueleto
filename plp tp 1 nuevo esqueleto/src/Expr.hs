@@ -23,14 +23,48 @@ data Expr
   deriving (Show, Eq)
 
 -- recrExpr :: ... anotar el tipo ...
-recrExpr = error "COMPLETAR EJERCICIO 7"
+{-lgtm-}
+-- WHAT THE FUCK IS THIS SHIT
+recExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> Expr -> b
+recExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
+  case expr of
+    Const f -> casoConst f
+    Rango f1 f2 -> casoRango f1 f2
+    Suma expr1 expr2 -> casoSuma expr1 (rec expr1) expr2 (rec expr2)
+    Resta expr1 expr2 -> casoResta expr1 (rec expr1) expr2 (rec expr2)
+    Mul expr1 expr2 -> casoMult expr1 (rec expr1) expr2 (rec expr2)
+    Div expr1 expr2 -> casoDiv expr1 (rec expr1) expr2 (rec expr2)
+  where rec = recExpr casoConst casoRango casoSuma casoResta casoMult casoDiv
+{-lgtm-}
+
+{-
+RECORDATORIO:
+Definamos una función foldAB que abstraiga el esquema de
+recursión estructural sobre árboles binarios.
+
+foldAB :: b -> (b -> a -> b -> b) -> AB a -> b
+foldAB cNil cBin Nil = cNil
+foldAB cNil cBin (Bin i r d) =
+  cBin (foldAB cNil cBin i) r (foldAB cNil cBin d)
+-}  
 
 -- foldExpr :: ... anotar el tipo ...
-foldExpr = error "COMPLETAR EJERCICIO 7"
+--          cb const,    cb rango,       suma,              resta,           mult,            div
+foldExpr :: (Float -> b) -> (Float -> Float -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> Expr -> b
+foldr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
+  case expr of
+    Const f -> casoConst f
+    Rango f1 f2 -> casoRango f1 f2
+    Suma expr1 expr2 -> casoSuma (rec expr1) (rec expr2)
+    Resta expr1 expr2 -> casoResta (rec expr1) (rec expr2)
+    Mul expr1 expr2 -> casoMult (rec expr1) (rec expr2)
+    Div expr1 expr2 -> casoDiv (rec expr1) (rec expr2)
+  where rec = foldr casoConst casoRango casoSuma casoResta casoMult casoDiv
 
 -- | Evaluar expresiones dado un generador de números aleatorios
+-- recordatorio: type G a = Gen -> (a, Gen)
 eval :: Expr -> G Float
-eval = error "COMPLETAR EJERCICIO 8"
+eval expr = foldExpr 
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.

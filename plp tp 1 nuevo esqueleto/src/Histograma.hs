@@ -1,3 +1,4 @@
+
 -- | Un `Histograma` es una estructura de datos que permite contar cuántos valores hay en cada rango.
 -- @vacio n (a, b)@ devuelve un histograma vacío con n+2 casilleros:
 --
@@ -24,7 +25,7 @@ module Histograma
 where
 
 import Util
-
+import Data.List (zipWith4)
 data Histograma = Histograma Float Float [Int]
   deriving (Show, Eq)
 
@@ -32,11 +33,23 @@ data Histograma = Histograma Float Float [Int]
 -- valores en el rango y 2 casilleros adicionales para los valores fuera del rango.
 -- Require que @l < u@ y @n >= 1@.
 vacio :: Int -> (Float, Float) -> Histograma
-vacio n (l, u) = error "COMPLETAR EJERCICIO 3"
+vacio n (l, u) = Histograma l (u-l) (replicate (n+2) 0)
+
+-- | Agrega un valor al histograma.
+{-
+agregar :: Float -> Histograma -> Histograma
+agregar x (Histograma mini maxi cs) = Histograma (mini) (maxi) (ubicarEnCasillero x mini cs)
+ where ubicarEnCasillero x mini cs = actualizarElem  (floor (x-(mini))) (\y -> y+1) cs
+
+-}
 
 -- | Agrega un valor al histograma.
 agregar :: Float -> Histograma -> Histograma
-agregar x _ = error "COMPLETAR EJERCICIO 4"
+agregar x (Histograma i t cs) | x<i= Histograma i t (actualizarElem 0 (+1) cs)
+                              | x> i+ fromIntegral n * t = Histograma i t (actualizarElem (n+1) (+1) cs)
+                              |otherwise = Histograma i t (actualizarElem (floor ((x-i)/t) + 1) (+1) cs)
+                              where n=length cs -2
+-- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
@@ -65,4 +78,19 @@ casPorcentaje (Casillero _ _ _ p) = p
 
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
 casilleros :: Histograma -> [Casillero]
-casilleros _ = error "COMPLETAR EJERCICIO 6"
+casilleros h = zipWith4 Casillero (mins h) (maxs h) (cant h) (porcentajes h)
+
+mins :: Histograma -> [Float]
+mins (Histograma i t cs) = map (\x -> if x==0 then infinitoNegativo else i+ (fromIntegral x * t)) [0 .. length cs - 1]
+
+maxs :: Histograma -> [Float]
+maxs (Histograma i t cs) = map (\x -> if x==length cs -1 then infinitoPositivo else i+(fromIntegral x * t)) [0 .. length cs - 1]
+
+cant :: Histograma -> [Int]
+cant (Histograma i t cs) = cs
+
+porcentajes :: Histograma -> [Float]
+porcentajes (Histograma n r cs) = map porcent  cs
+                                where 
+                                  total = fromIntegral(sum cs)
+                                  porcent cant = (fromIntegral cant * 100) / total
