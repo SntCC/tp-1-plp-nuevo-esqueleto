@@ -25,16 +25,16 @@ data Expr
 -- recrExpr :: ... anotar el tipo ...
 {-lgtm-}
 -- WHAT THE FUCK IS THIS SHIT
-recExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> Expr -> b
-recExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
+recrExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> Expr -> b
+recrExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
   case expr of
     Const f -> casoConst f
     Rango f1 f2 -> casoRango f1 f2
     Suma expr1 expr2 -> casoSuma expr1 (rec expr1) expr2 (rec expr2)
     Resta expr1 expr2 -> casoResta expr1 (rec expr1) expr2 (rec expr2)
-    Mul expr1 expr2 -> casoMult expr1 (rec expr1) expr2 (rec expr2)
+    Mult expr1 expr2 -> casoMult expr1 (rec expr1) expr2 (rec expr2)
     Div expr1 expr2 -> casoDiv expr1 (rec expr1) expr2 (rec expr2)
-  where rec = recExpr casoConst casoRango casoSuma casoResta casoMult casoDiv
+  where rec = recrExpr casoConst casoRango casoSuma casoResta casoMult casoDiv
 {-lgtm-}
 
 {-
@@ -51,20 +51,20 @@ foldAB cNil cBin (Bin i r d) =
 -- foldExpr :: ... anotar el tipo ...
 --          cb const,    cb rango,       suma,              resta,           mult,            div
 foldExpr :: (Float -> b) -> (Float -> Float -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> Expr -> b
-foldr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
+foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
   case expr of
     Const f -> casoConst f
     Rango f1 f2 -> casoRango f1 f2
     Suma expr1 expr2 -> casoSuma (rec expr1) (rec expr2)
     Resta expr1 expr2 -> casoResta (rec expr1) (rec expr2)
-    Mul expr1 expr2 -> casoMult (rec expr1) (rec expr2)
+    Mult expr1 expr2 -> casoMult (rec expr1) (rec expr2)
     Div expr1 expr2 -> casoDiv (rec expr1) (rec expr2)
-  where rec = foldr casoConst casoRango casoSuma casoResta casoMult casoDiv
+  where rec = foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 -- recordatorio: type G a = Gen -> (a, Gen)
 eval :: Expr -> G Float
-eval expr = foldExpr 
+eval expr = 
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
