@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
+{-# HLINT ignore "Use first" #-}
 module Expr
   ( Expr (..),
     recrExpr,
@@ -13,7 +14,7 @@ where
 
 import Generador
 import Histograma
-import Data.ByteString (cons)
+--import Data.ByteString (cons)
 import Data.Function (const)
 
 -- | Expresiones aritméticas con rangos
@@ -69,21 +70,22 @@ foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
 -- recordatorio: type G a = Gen -> (a, Gen)
 eval :: Expr -> G Float
 eval expr g = recrExpr (\x -> (x,g)) (\x y  -> dameUno (x,y) g) (res (+)) (res (-)) ( res (*)) (res (/)) expr
-  where res f expr1 rec1 expr2 rec2= (f (fst rec1) (fst(eval expr2 (snd rec1))),snd rec2)
+  where res f expr1 rec1 expr2 rec2= (f (fst rec1) (fst (eval expr2 (snd rec1))),snd rec2)
 -- Explicar que concha estamos haciendo aca...
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
                           --(Gen -> (Float, Gen)) --(Gen -> (Histograma, Gen))
+
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f g = (histograma m (rango95 (fst mostrar)), snd mostrar)
-                  where mostrar = muestra f n g
+armarHistograma m n f g = (histograma m (rango95 (fst muestras)) (fst muestras), snd muestras)
+                  where muestras = muestra f n g
 
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
 -- @n@ debe ser mayor que 0.
 evalHistograma :: Int -> Int -> Expr -> G Histograma
-evalHistograma m n expr = error "COMPLETAR EJERCICIO 10"
+evalHistograma m n expr = armarHistograma m n (eval expr)
 
 -- Podemos armar histogramas que muestren las n evaluaciones en m casilleros.
 -- >>> evalHistograma 11 10 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)
@@ -95,7 +97,8 @@ evalHistograma m n expr = error "COMPLETAR EJERCICIO 10"
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar = error "COMPLETAR EJERCICIO 11"
+mostrar = foldExpr show (\x y-> show x ++ " ~ " ++ show y ) (\recx recy -> recx ++ " + "++ recy) (\recx recy -> recx ++ " - "++ recy)
+                        (\recx recy ->"("++ recx ++ " * "++ recy ++ ")") (\recx recy -> "("++recx ++ " / "++ recy++ ")")                                        
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
