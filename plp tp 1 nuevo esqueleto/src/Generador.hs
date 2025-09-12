@@ -67,6 +67,7 @@ module Generador
 where
 
 import qualified Data.Random.Normal as RN
+
 import qualified System.Random as R
 
 newtype Gen = Gen {siguiente :: (Float, Gen)}

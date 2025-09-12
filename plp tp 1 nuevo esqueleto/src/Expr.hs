@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use tuple-section" #-}
 module Expr
   ( Expr (..),
     recrExpr,
@@ -11,6 +13,8 @@ where
 
 import Generador
 import Histograma
+import Data.ByteString (cons)
+import Data.Function (const)
 
 -- | Expresiones aritméticas con rangos
 data Expr
@@ -26,7 +30,7 @@ data Expr
 {-lgtm-}
 -- WHAT THE FUCK IS THIS SHIT
 recrExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> Expr -> b
-recrExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
+recrExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
   case expr of
     Const f -> casoConst f
     Rango f1 f2 -> casoRango f1 f2
@@ -46,12 +50,12 @@ foldAB :: b -> (b -> a -> b -> b) -> AB a -> b
 foldAB cNil cBin Nil = cNil
 foldAB cNil cBin (Bin i r d) =
   cBin (foldAB cNil cBin i) r (foldAB cNil cBin d)
--}  
+-}
 
 -- foldExpr :: ... anotar el tipo ...
 --          cb const,    cb rango,       suma,              resta,           mult,            div
 foldExpr :: (Float -> b) -> (Float -> Float -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> Expr -> b
-foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr = 
+foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
   case expr of
     Const f -> casoConst f
     Rango f1 f2 -> casoRango f1 f2
@@ -64,12 +68,16 @@ foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
 -- | Evaluar expresiones dado un generador de números aleatorios
 -- recordatorio: type G a = Gen -> (a, Gen)
 eval :: Expr -> G Float
-eval expr = 
+eval expr g = recrExpr (\x -> (x,g)) (\x y  -> dameUno (x,y) g) (res (+)) (res (-)) ( res (*)) (res (/)) expr
+  where res f expr1 rec1 expr2 rec2= (f (fst rec1) (fst(eval expr2 (snd rec1))),snd rec2)
+-- Explicar que concha estamos haciendo aca...
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
+                          --(Gen -> (Float, Gen)) --(Gen -> (Histograma, Gen))
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f g = error "COMPLETAR EJERCICIO 9"
+armarHistograma m n f g = (histograma m (rango95 (fst mostrar)), snd mostrar)
+                  where mostrar = muestra f n g
 
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
