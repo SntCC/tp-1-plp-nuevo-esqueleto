@@ -33,7 +33,7 @@ data Histograma = Histograma Float Float [Int]
 -- valores en el rango y 2 casilleros adicionales para los valores fuera del rango.
 -- Require que @l < u@ y @n >= 1@.
 vacio :: Int -> (Float, Float) -> Histograma
-vacio n (l, u) = Histograma l (u-l) (replicate (n+2) 0)
+vacio n (l, u) = Histograma l ((u - l)/fromIntegral n) (replicate (n+2) 0)
 
 -- | Agrega un valor al histograma.
 {-
@@ -82,16 +82,18 @@ casilleros :: Histograma -> [Casillero]
 casilleros h = zipWith4 Casillero (mins h) (maxs h) (cant h) (porcentajes h)
 
 mins :: Histograma -> [Float]
-mins (Histograma i t cs) = map (\x -> if x==0 then infinitoNegativo else i+ (fromIntegral x * t)) [0 .. length cs - 1]
-
+mins (Histograma i t cs) = (-infinitoPositivo) : [ i + t * fromIntegral k | k <- [0..length cs - 3] ] ++ [i + t * fromIntegral (length cs - 2)]
 maxs :: Histograma -> [Float]
-maxs (Histograma i t cs) = map (\x -> if x==length cs -1 then infinitoPositivo else i+(fromIntegral x * t)) [0 .. length cs - 1]
+maxs (Histograma i t cs) = [ i + t * fromIntegral k | k <- [0..length cs - 2] ] ++ [infinitoPositivo]
 
 cant :: Histograma -> [Int]
 cant (Histograma i t cs) = cs
 
 porcentajes :: Histograma -> [Float]
-porcentajes (Histograma n r cs) = map porcent  cs
-                                where 
-                                  total = fromIntegral(sum cs)
-                                  porcent cant = (fromIntegral cant * 100) / total
+porcentajes (Histograma _ _ cs) =
+    if total == 0
+       then replicate (length cs) 0
+       else map (\c -> fromIntegral c * 100 / total) cs
+  where
+    total :: Float
+    total = fromIntegral (sum cs)
