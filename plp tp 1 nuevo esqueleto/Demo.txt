@@ -33,7 +33,7 @@ S Z = S Z {L2}
 
 con esto queda comprobado el caso base rango.
 
-pasamos al siguiente caso, dando por hecho que si funciona para uno de los recursivos, funciona para todos, por conveniencia, usamos las operaciones de Suma.
+pasamos al siguiente caso, dando por hecho que si funciona para uno de los casos recursivos, funciona para todos, y por conveniencia, usamos las operaciones de Suma.
 
 Además, al ser un caso recursivo, vamos un a plantear una hipotesis y tesis para el mismo, y entendiendo que P funciona para los 2 casos base:
 
