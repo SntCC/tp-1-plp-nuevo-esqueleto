@@ -1,0 +1,71 @@
+Demostración punto 12:
+
+queremos demostrar que :
+
+∀e:Expr.cantLit e = S (cant0p e)
+
+para esto, basta probar P talque :
+
+Sea P(t) = cantlit t = S (cant0p t) , vale para ∀ t::Expr
+
+para lo mismo, usamos inducción estructural:
+
+
+miramos los casos:
+
+caso t = const x ; para todo x de tipo nat.
+
+P(const x) =
+
+cantLit(const x) = S (cant0p (const x))
+cantLit(const x) = S Z {01}
+S Z = S Z {L1}
+
+con esto queda comprobado nuestro caso base const.
+
+pasamos al caso rango: x y para todo x y de tipo float vale que:
+
+P(rango x y) =
+
+cantLit (rango x y) = S cant0p (rango x y)
+cantLit (rango x y) = S (Z){02}
+S Z = S Z {L2}
+
+con esto queda comprobado el caso base rango.
+
+pasamos al siguiente caso, dando por hecho que si funciona para uno de los recursivos, funciona para todos, por conveniencia, usamos las operaciones de Suma.
+
+Además, al ser un caso recursivo, vamos un a plantear una hipotesis y tesis para el mismo, y entendiendo que P funciona para los 2 casos base:
+
+∀ ex1 ex2 ::Expr. cantLit e = S (cant0p e) // (J siendo un constructor genérico no base/operacional/del tipo Expr.)
+
+P(ex1) && P (ex2) => P(J ex1 ex2)
+
+esto expandido sería:
+
+HI1 = cantLit ex1 = S (cant0p ex1)
+HI2 = cantlit ex2 = S (cant0p ex2)
+
+y la tesis a probar sería :
+
+P(J ex1 ex2) = 
+
+{reitero, vamos a usar las operaciones de suma por conveniencia, ya que se comportan todos de la misma manera}
+
+cantLit(J ex1 ex2)   = S (cant0p (J ex1 ex2)) 
+
+cantLit(J ex1 ex2) = S (S(suma (cant0p ex1) (cant0p ex2))) {03}
+
+suma (cantLit ex1) (cantLit ex2) = S (S (suma (cant0p ex1) (cant0p ex2))) {L3}
+
+suma (S cant0p ex1) (S cant0p ex2) = S (S (suma (cant0p ex1) (cant0p ex2))) {HI1 y HI2}
+
+S (suma (cant0p ex1) (S cant0p ex2)) = S (S (suma (cant0p ex1) (cant0p ex2))) {S2}
+
+S (suma (S cant0p ex2) (cant0p ex1)) = S (S (suma (cant0p ex1) (cant0p ex2))) {CONMUT}
+
+S (S (suma (cant0p ex2) (cant0p ex1))) = S (S (suma (cant0p ex1) (cant0p ex2))) {S2}
+
+S (S (suma (cant0p ex1) (cant0p ex2))) = S (S (suma (cant0p ex1) (cant0p ex2))) {CONMUT}
+
+con esto queda demostrado nuestro caso recursivo, probando así que P se cumple para todos los casos, y por ende nuestra propiedad es verdadera.
