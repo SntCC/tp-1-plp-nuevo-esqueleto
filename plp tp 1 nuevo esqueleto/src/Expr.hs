@@ -27,9 +27,8 @@ data Expr
   | Div Expr Expr
   deriving (Show, Eq)
 
+
 -- recrExpr :: ... anotar el tipo ...
-{-lgtm-}
--- WHAT THE FUCK IS THIS SHIT
 recrExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> Expr -> b
 recrExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
   case expr of
@@ -40,18 +39,7 @@ recrExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
     Mult expr1 expr2 -> casoMult expr1 (rec expr1) expr2 (rec expr2)
     Div expr1 expr2 -> casoDiv expr1 (rec expr1) expr2 (rec expr2)
   where rec = recrExpr casoConst casoRango casoSuma casoResta casoMult casoDiv
-{-lgtm-}
 
-{-
-RECORDATORIO:
-Definamos una función foldAB que abstraiga el esquema de
-recursión estructural sobre árboles binarios.
-
-foldAB :: b -> (b -> a -> b -> b) -> AB a -> b
-foldAB cNil cBin Nil = cNil
-foldAB cNil cBin (Bin i r d) =
-  cBin (foldAB cNil cBin i) r (foldAB cNil cBin d)
--}
 
 -- foldExpr :: ... anotar el tipo ...
 --          cb const,    cb rango,       suma,              resta,           mult,            div
@@ -71,7 +59,7 @@ foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
 eval :: Expr -> G Float
 eval expr g = recrExpr (\x -> (x,g)) (\x y  -> dameUno (x,y) g) (res (+)) (res (-)) ( res (*)) (res (/)) expr
   where res f expr1 rec1 expr2 rec2= (f (fst rec1) (fst (eval expr2 (snd rec1))),snd rec2)
--- Explicar que concha estamos haciendo aca...
+
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.

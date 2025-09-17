@@ -36,23 +36,13 @@ vacio :: Int -> (Float, Float) -> Histograma
 vacio n (l, u) = Histograma l ((u - l)/fromIntegral n) (replicate (n+2) 0)
 
 -- | Agrega un valor al histograma.
-{-
-agregar :: Float -> Histograma -> Histograma
-agregar x (Histograma mini maxi cs) = Histograma (mini) (maxi) (ubicarEnCasillero x mini cs)
- where ubicarEnCasillero x mini cs = actualizarElem  (floor (x-(mini))) (\y -> y+1) cs
-
--}
-
--- | Agrega un valor al histograma.
 agregar :: Float -> Histograma -> Histograma
 agregar x (Histograma i t cs) | x<i= Histograma i t (actualizarElem 0 (+1) cs)
                               | x> i+ fromIntegral n * t = Histograma i t (actualizarElem (n+1) (+1) cs)
                               |otherwise = Histograma i t (actualizarElem (floor ((x-i)/t) + 1) (+1) cs)
                               where n=length cs -2
--- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
-
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
 histograma n (l, u) = foldr agregar (vacio n (l, u))
 
