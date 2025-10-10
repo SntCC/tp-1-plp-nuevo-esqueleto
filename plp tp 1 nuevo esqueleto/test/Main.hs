@@ -143,7 +143,7 @@ testsEval =
     [ fst (eval (Suma (Rango 1 5) (Const 1)) genFijo) ~?= 4.0,
       fst (eval (Suma (Rango 1 5) (Const 1)) (genNormalConSemilla 0)) ~?= 3.7980492,
       -- el primer rango evalua a 2.7980492 y el segundo a 3.1250308
-      fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
+      fst (eval (Suma (Rango 1 5) (rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
       completar
     ]
 

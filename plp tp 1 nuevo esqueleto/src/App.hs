@@ -7,9 +7,9 @@ import Histograma
 import qualified Numeric
 import Util
 
--- | Función auxiliar para probar el histograma con generadores de números aleatorios.
-probarHistograma :: (Float, Float) -> Int -> Gen -> Histograma
-probarHistograma rango cantidadMuestras g =
+-- | Función auxiliar paoat) -> Int -> Gen -> Histograma
+probarHistograma rango cra probar el histograma con generadores de números aleatorios.
+probarHistograma :: (Float, FlantidadMuestras g =
   fst $ armarHistograma 11 cantidadMuestras (dameUno rango) g
 
 -- Desde el repl

@@ -2,7 +2,9 @@
 GHC_VERSION=9.6.7
 CABAL_VERSION=3.12.1.0
 GHCUP_ENV=ghcup run --ghc $(GHC_VERSION) --cabal $(CABAL_VERSION)
-
+.PHONY: run
+run:
+	$(GHCUP_ENV) -- cabal run
 .PHONY: deps
 deps:
 	$(GHCUP_ENV) -- cabal update

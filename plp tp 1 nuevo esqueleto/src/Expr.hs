@@ -16,7 +16,7 @@ import Generador
 import Histograma
 --import Data.ByteString (cons)
 import Data.Function (const)
-
+import Util
 -- | Expresiones aritméticas con rangos
 data Expr
   = Const Float
@@ -56,9 +56,15 @@ foldExpr casoConst casoRango casoSuma casoResta casoMult casoDiv expr =
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 -- recordatorio: type G a = Gen -> (a, Gen)
+      --Expr -> Gen -> (a,Gen)
 eval :: Expr -> G Float
-eval expr g = recrExpr (\x -> (x,g)) (\x y  -> dameUno (x,y) g) (res (+)) (res (-)) ( res (*)) (res (/)) expr
-  where res f expr1 rec1 expr2 rec2= (f (fst rec1) (fst (eval expr2 (snd rec1))),snd rec2)
+eval  = foldExpr (,) (\x y g-> dameUno (x,y) g) (generarValorYgenerador (+)) (generarValorYgenerador (-))
+                                                            (generarValorYgenerador (*)) (generarValorYgenerador  (/))
+generarValorYgenerador :: (Float->Float->Float)->G Float->G Float -> Gen-> (Float,Gen)
+generarValorYgenerador f x y g  = let (a,g1)= x g
+                                      (b,g2)= y g1
+                                  in (f a b,g2)
+
 
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
@@ -85,9 +91,23 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
+
 mostrar :: Expr -> String
-mostrar = foldExpr show (\x y-> show x ++ " ~ " ++ show y ) (\recx recy -> recx ++ " + "++ recy) (\recx recy -> recx ++ " - "++ recy)
-                        (\recx recy ->"("++ recx ++ " * "++ recy ++ ")") (\recx recy -> "("++recx ++ " / "++ recy++ ")")                                        
+mostrar = recrExpr show rango (\x recx y recy ->  maybeParen (esSuma x && esSuma y ) (suma recx recy))
+                              (\x recx y recy -> resta (maybeParen (not (esConstORango x)) recx) (maybeParen (not (esConstORango y)) recy))
+                              (\x recx y recy -> maybeParen (not( esMult x && esMult y) ) (mult recx recy))
+                              (\x recx y recy -> div (maybeParen (not (esConstORango x)) recx) (maybeParen (not (esConstORango y)) recy))
+              where rango x y = show x++" ~ "++show y; --constructores de strings
+                    suma recx recy= recx++" + "++recy ;--constructores de strings
+                    resta recx recy= recx++" - "++recy;--constructores de strings
+                    div recx recy =  recx ++" / "++recy;--constructores de strings
+                    mult recx recy = recx ++ " * " ++recy;--constructores de strings
+                    esConstORango a= constructor a ==CEConst|| constructor a==CERango --bool de comparacion de maybe
+                    esSuma a=constructor a == CESuma 
+                    esMult a = constructor a == CEMult 
+
+pepe= casilleros (agregar 2 (vacio 3 (0, 6)))== [ Casillero infinitoNegativo 0.0 0 0.0, Casillero 0.0 2.0 0 0.0,Casillero 2.0 4.0 1 100.0,Casillero 4.0 6.0 0 0.0, Casillero 6.0 infinitoPositivo 0 0.0]
+
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
