@@ -41,7 +41,9 @@ testsAlinearDerecha =
   test
     [ alinearDerecha 6 "hola" ~?= "  hola",
       alinearDerecha 10 "incierticalc" ~?= "incierticalc",
-      completar
+      alinearDerecha 0 "hola" ~?= "hola",
+      alinearDerecha (-1) "incierticalc" ~?= "incierticalc",
+      alinearDerecha 4 "hola" ~?= "hola"
     ]
 
 testsActualizarElem :: Test
@@ -49,7 +51,9 @@ testsActualizarElem =
   test
     [ actualizarElem 0 (+ 10) [1, 2, 3] ~?= [11, 2, 3],
       actualizarElem 1 (+ 10) [1, 2, 3] ~?= [1, 12, 3],
-      completar
+      actualizarElem 4 (+ 10) [1, 2, 3] ~?= [1, 2, 3],
+      actualizarElem (-1) (+ 10) [1, 2, 3] ~?= [1, 2, 3],
+      actualizarElem 2 (+ 10) [1, 2, 3] ~?= [1, 2, 13]
     ]
 
 testsVacio :: Test
@@ -67,7 +71,16 @@ testsVacio =
               Casillero 4 6 0 0,
               Casillero 6 infinitoPositivo 0 0
             ],
-      completar
+      casilleros (vacio 6 (0, 6))
+        ~?= [ Casillero infinitoNegativo 0 0 0,
+              Casillero 0 1 0 0,
+              Casillero 1 2 0 0,
+              Casillero 2 3 0 0,
+              Casillero 3 4 0 0,
+              Casillero 4 5 0 0,
+              Casillero 5 6 0 0,
+              Casillero 6 infinitoPositivo 0 0
+            ]
     ]
 
 testsAgregar :: Test
@@ -95,14 +108,23 @@ testsAgregar =
                   Casillero 4 6 0 0,
                   Casillero 6 infinitoPositivo 0 0
                 ],
-          completar
+
+          casilleros (agregar 2 ((agregar 7 h0)))
+            ~?= [ Casillero infinitoNegativo 0 0 0,
+                  Casillero 0 2 0 0,
+                  Casillero 2 4 1 50,
+                  Casillero 4 6 0 0,
+                  Casillero 6 infinitoPositivo 1 50
+                ]
+      
         ]
 
 testsHistograma :: Test
 testsHistograma =
   test
     [ histograma 4 (1, 5) [1, 2, 3] ~?= agregar 3 (agregar 2 (agregar 1 (vacio 4 (1, 5)))),
-      completar
+      histograma 1 (1, 5) [1, 2, 3] ~?= agregar 3 (agregar 2 (agregar 1 (vacio 1 (1, 5)))),
+      histograma 4 (1, 5) [] ~?= vacio 4 (1, 5)
     ]
 
 testsCasilleros :: Test

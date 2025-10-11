@@ -1,4 +1,3 @@
-
 -- | Un `Histograma` es una estructura de datos que permite contar cuántos valores hay en cada rango.
 -- @vacio n (a, b)@ devuelve un histograma vacío con n+2 casilleros:
 --
