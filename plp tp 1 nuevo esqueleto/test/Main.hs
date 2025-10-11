@@ -144,19 +144,49 @@ testsCasilleros =
               Casillero 4.0 6.0 0 0.0,
               Casillero 6.0 infinitoPositivo 0 0.0
             ],
-      completar
+
+      casilleros (agregar 4 (agregar 2 (vacio 3 (0, 6))))
+        ~?= [ Casillero infinitoNegativo 0.0 0 0.0,
+              Casillero 0.0 2.0 0 0.0,
+              Casillero 2.0 4.0 1 50.0,
+              Casillero 4.0 6.0 1 50.0,
+              Casillero 6.0 infinitoPositivo 0 0.0
+            ],
+      casilleros (agregar 8 (vacio 3 (0, 6)))
+        ~?= [ Casillero infinitoNegativo 0.0 0 0.0,
+              Casillero 0.0 2.0 0 0.0,
+              Casillero 2.0 4.0 0 0.0,
+              Casillero 4.0 6.0 0 0.0,
+              Casillero 6.0 infinitoPositivo 1 100.0
+            ],
+      casilleros (agregar (-1) (vacio 3 (0, 6)))
+        ~?= [ Casillero infinitoNegativo 0.0 1 100.0,
+              Casillero 0.0 2.0 0 0.0,
+              Casillero 2.0 4.0 0 0.0,
+              Casillero 4.0 6.0 0 0.0,
+              Casillero 6.0 infinitoPositivo 0 0.0
+            ]
     ]
 
 testsRecr :: Test
 testsRecr =
   test
-    [ completar
-    ]
+    [ recrExpr Const Rango 
+                     (\a reca b recb->Suma reca recb)
+                     (\a reca b recb->Resta reca recb) 
+                     (\a reca b recb->Mult reca recb) 
+                     (\a reca b recb->if b == Const 0 then Mult reca (Const 1.0) else Div reca recb) 
+                     (Div (Const 2.0) (Const 0))
+      ~?= Mult (Const 2.0) (Const 1)
+    ] -- No se nos ocurre ningun otro test para usar el recr
 
 testsFold :: Test
 testsFold =
-  test
-    [ completar
+  test 
+    [ foldExpr (\a -> Const (a+1)) Rango Suma Resta Mult Div (Suma (Const 2.0) (Const 2.0)) 
+      ~?= Suma (Const 3.0) (Const 3.0),
+      foldExpr Const Rango Resta Suma Div Mult (Resta (Suma (Mult (Const 2.0) (Const 2.0)) (Div (Const 2.0) (Const 2.0))) (Const 2.0)) 
+      ~?= Suma (Resta (Div (Const 2.0) (Const 2.0)) (Mult (Const 2.0) (Const 2.0))) (Const 2.0)
     ]
 
 testsEval :: Test
@@ -166,7 +196,8 @@ testsEval =
       fst (eval (Suma (Rango 1 5) (Const 1)) (genNormalConSemilla 0)) ~?= 3.7980492,
       -- el primer rango evalua a 2.7980492 y el segundo a 3.1250308
       fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
-      completar
+      
+      
     ]
 
 testsArmarHistograma :: Test
