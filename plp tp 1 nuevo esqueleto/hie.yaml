@@ -1,0 +1,6 @@
+cradle:
+  cabal:
+    - path: "./src"
+      component: "lib:incerticake"
+    - path: "./test"
+      component: "incerticake:test:incerticake-test"
