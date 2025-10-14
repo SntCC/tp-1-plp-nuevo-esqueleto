@@ -6,7 +6,7 @@ queremos demostrar que :
 
 para esto, basta probar P talque :
 
-Sea P(t) = cantlit t = S (cant0p t) , vale para ∀ t::Expr
+Sea P(t) = cantlit t = S (cant0p t) , ∀ t::Expr
 
 para lo mismo, usamos inducción estructural:
 

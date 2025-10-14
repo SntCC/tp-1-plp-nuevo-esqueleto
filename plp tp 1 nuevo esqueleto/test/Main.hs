@@ -207,8 +207,8 @@ testsArmarHistograma :: Test
 testsArmarHistograma =
   test
     [ 
-      mostrarHistograma (fst $ armarHistograma 11 100 (dameUno (1,2)) (genNormalConSemilla 2)) ~?= 
-        mostrarHistograma (fst $ armarHistograma 1 1 (dameUno (1,1)) (genFijo)) 
+      fst $ armarHistograma 1 1 (dameUno (1,2)) (genNormalConSemilla 2) ~?= 
+      mostrarHistograma (fst $ armarHistograma 1 1 (dameUno (1,1)) (genFijo)) 
     ]
 
 testsEvalHistograma :: Test
