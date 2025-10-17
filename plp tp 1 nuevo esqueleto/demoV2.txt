@@ -6,14 +6,16 @@ queremos demostrar que :
 
 para esto, basta probar P talque :
 
-Sea P(t) = cantlit t = S (cant0p t) , ∀ t::Expr
+Sea P(t) = cantlit t = S (cant0p t)
+para lo mismo, usamos inducción estructural en t:
 
-para lo mismo, usamos inducción estructural:
-
+1)-caso base const; P(const n)
+2)-caso base rango; P(Rango x y)
+3)-caso recursivo suma; P (suma E1 E2)
 
 miramos los casos:
 
-caso t = const x ; para todo x de tipo nat.
+1)- caso base t = const x ; para todo x de tipo nat.
 
 P(const x) =
 
@@ -23,7 +25,7 @@ S Z = S Z {L1}
 
 con esto queda comprobado nuestro caso base const.
 
-pasamos al caso rango: x y para todo x y de tipo float vale que:
+2)- caso base rango : para todo x y de tipo float vale que:
 
 P(rango x y) =
 
@@ -33,13 +35,13 @@ S Z = S Z {L2}
 
 con esto queda comprobado el caso base rango.
 
-pasamos al siguiente caso, dando por hecho que si funciona para uno de los casos recursivos, funciona para todos, y por conveniencia, usamos las operaciones de Suma.
+3)-caso recursivo suma
 
-Además, al ser un caso recursivo, vamos un a plantear una hipotesis y tesis para el mismo, y entendiendo que P funciona para los 2 casos base:
+A continuación demostramos el caso suma; los casos resta, mult y div se omiten por ser análogos.
 
-∀ ex1 ex2 ::Expr. cantLit e = S (cant0p e) // (J siendo un constructor genérico no base/operacional/del tipo Expr.)
+Al ser un caso recursivo, vamos a plantear una hipotesis y tesis para el mismo:
 
-P(ex1) && P (ex2) => P(J ex1 ex2)
+∀ ex1 ex2 ::Expr. P(ex1) && P (ex2) => P(suma ex1 ex2)
 
 esto expandido sería:
 
@@ -48,13 +50,11 @@ HI2 = cantlit ex2 = S (cant0p ex2)
 
 y la tesis a probar sería :
 
-P(J ex1 ex2) = 
+P(suma ex1 ex2) = 
 
-{reitero, vamos a usar las operaciones de suma por conveniencia, ya que se comportan todos de la misma manera}
+cantLit(suma ex1 ex2)   = S (cant0p (suma ex1 ex2)) 
 
-cantLit(J ex1 ex2)   = S (cant0p (J ex1 ex2)) 
-
-cantLit(J ex1 ex2) = S (S(suma (cant0p ex1) (cant0p ex2))) {03}
+cantLit(suma ex1 ex2) = S (S(suma (cant0p ex1) (cant0p ex2))) {03}
 
 suma (cantLit ex1) (cantLit ex2) = S (S (suma (cant0p ex1) (cant0p ex2))) {L3}
 
