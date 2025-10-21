@@ -178,7 +178,7 @@ testsRecr =
                      (\a reca b recb->if b == Const 0 then Mult reca (Const 1.0) else Div reca recb) 
                      (Div (Const 2.0) (Const 0))
       ~?= Mult (Const 2.0) (Const 1)
-    ] -- No se nos ocurre ningun otro test para usar el recr
+    ] 
 
 testsFold :: Test
 testsFold =

@@ -92,20 +92,6 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 
--- mostrar :: Expr -> String
--- mostrar = recrExpr show rango (\x recx y recy ->  maybeParen (esSuma x && esSuma y ) (suma recx recy))
---                               (\x recx y recy -> resta (maybeParen (not (esConstORango x)) recx) (maybeParen (not (esConstORango y)) recy))
---                               (\x recx y recy -> maybeParen (not( esMult x && esMult y) ) (mult recx recy))
---                               (\x recx y recy -> div (maybeParen (not (esConstORango x)) recx) (maybeParen (not (esConstORango y)) recy))
---               where rango x y = show x++"~"++show y; --constructores de strings
---                     suma recx recy= recx++" + "++recy ;--constructores de strings
---                     resta recx recy= recx++" - "++recy;--constructores de strings
---                     div recx recy =  recx ++" / "++recy;--constructores de strings
---                     mult recx recy = recx ++ " * " ++recy;--constructores de strings
---                     esConstORango a= constructor a ==CEConst|| constructor a==CERango --bool de comparacion de maybe
---                     esSuma a=constructor a == CESuma 
---                     esMult a = constructor a == CEMult 
-
 mostrar :: Expr -> String
 mostrar = recrExpr show rango  (\x recx y recy -> suma (maybeParen (esMult x) recx) (maybeParen (esMult y) recy))
                                (\x recx y recy -> resta (maybeParen (not (esConstORango x)) recx) (maybeParen (not (esConstORango y)) recy))
